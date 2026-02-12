@@ -10,27 +10,42 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
                 
                 <form action="{{ route('livres.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf {{-- Darouri bach l-form ikhdem --}}
+                    @csrf 
 
                     <div class="space-y-4">
+                        {{-- Titre --}}
                         <div>
                             <label class="block font-medium text-sm text-gray-700">Titre</label>
                             <input type="text" name="titre" class="w-full border-gray-300 rounded-md shadow-sm" required>
                         </div>
 
+                        {{-- Description --}}
                         <div>
                             <label class="block font-medium text-sm text-gray-700">Description</label>
-                            <textarea name="description" class="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                            <textarea name="description" class="w-full border-gray-300 rounded-md shadow-sm" rows="3"></textarea>
                         </div>
 
+                        {{-- Age Min & Age Max --}}
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block font-medium text-sm text-gray-700">Photo</label>
-                                <input type="file" name="photo" class="w-full">
+                                <label class="block font-medium text-sm text-gray-700">Âge Minimum</label>
+                                <input type="number" name="age_min" class="w-full border-gray-300 rounded-md shadow-sm" placeholder="Ex: 3">
                             </div>
                             <div>
-                                <label class="block font-medium text-sm text-gray-700">Audio</label>
-                                <input type="file" name="audio" class="w-full">
+                                <label class="block font-medium text-sm text-gray-700">Âge Maximum</label>
+                                <input type="number" name="age_max" class="w-full border-gray-300 rounded-md shadow-sm" placeholder="Ex: 6">
+                            </div>
+                        </div>
+
+                        {{-- Photo & Audio --}}
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-medium text-sm text-gray-700">Photo (Couverture)</label>
+                                <input type="file" name="photo" class="w-full mt-1">
+                            </div>
+                            <div>
+                                <label class="block font-medium text-sm text-gray-700">Fichier Audio</label>
+                                <input type="file" name="audio" class="w-full mt-1">
                             </div>
                         </div>
 

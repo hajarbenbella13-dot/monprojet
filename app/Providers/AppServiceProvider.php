@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    public const HOME = '/admin/livres';
     /**
      * Register any application services.
      */
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
+   
     /**
      * Bootstrap any application services.
      */

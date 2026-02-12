@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Livre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ProfileController;   
+
+
+
 
 class LivreController extends Controller
 {
@@ -13,16 +18,11 @@ class LivreController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    // 1. Njibou ga3 l'ktouba mn la base de données
-    $livres = \App\Models\Livre::all(); 
-    return redirect()->route('livres.index');
-
-    $livres = Livre::latest()->get();
-    // 2. N-rej3o la vue li kayna f resources/views/admin/livres/index.blade.php
-    return view('admin.livres.index', compact('livres'));
-}
-
+    {
+        $livres = \App\Models\Livre::latest()->get(); 
+        
+        return view('admin.livres.index', compact('livres'));
+    }
     /**
      * Show the form for creating a new resource.
      */
