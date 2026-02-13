@@ -11,11 +11,13 @@
             </a>
         </div>
     </x-slot>
+
     @if(session('success'))
-    <div style="background-color: #d1fae5; color: #065f46; padding: 10px; margin-bottom: 20px; border-radius: 5px;">
-        {{ session('success') }}
-    </div>
-@endif
+        <div style="background-color: #d1fae5; color: #065f46; padding: 10px; margin: 20px; border-radius: 5px;">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg shadow-md">
@@ -28,7 +30,6 @@
                                 <th class="p-4 font-bold uppercase text-sm text-gray-600">Photo</th>
                                 <th class="p-4 font-bold uppercase text-sm text-gray-600">Titre</th>
                                 <th class="p-4 font-bold uppercase text-sm text-gray-600">Audio</th>
-                                <th class="p-4 font-bold uppercase text-sm text-gray-600">Description</th>
                                 <th class="p-4 font-bold uppercase text-sm text-gray-600 text-center">Âge</th>
                                 <th class="p-4 font-bold uppercase text-sm text-gray-600 text-center">Actions</th>
                             </tr>
@@ -45,34 +46,41 @@
                                         @endif
                                     </td>
                                     <td class="p-4 font-medium">{{ $livre->titre }}</td>
-                                    <td class="p-4 text-sm">
+                                    <td class="p-4 text-sm text-center">
                                         @if($livre->audio)
-                                            <span class="text-green-600">🎵 Audio OK</span>
+                                            <span title="Audio présent">🎵</span>
                                         @else
-                                            <span class="text-red-400">❌ Aucun</span>
+                                            <span title="Pas d'audio">➖</span>
                                         @endif
                                     </td>
-                                    <td class="p-4 text-sm text-gray-600 max-w-xs truncate">{{ $livre->description }}</td>
                                     <td class="p-4 text-center">
                                         <span class="bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs">
                                             {{ $livre->age_min }} - {{ $livre->age_max }} ans
                                         </span>
                                     </td>
                                     <td class="p-4 text-center">
-                                        <div class="flex justify-center space-x-2">
-                                            <a href="{{ route('livres.edit', $livre->id) }}" class="text-blue-600 hover:text-blue-900 font-semibold">Modifier</a>
-                                            <form action="{{ route('livres.destroy', $livre->id) }}" method="POST" onsubmit="return confirm('Etes-vous sûr ?');">
+                                        <div class="flex justify-center items-center space-x-4">
+                                            {{-- Bouton Ajouter Page --}}
+                                            <a href="{{ route('pages.create', $livre->id) }}" class="text-green-600 hover:text-green-800 font-bold text-sm flex items-center">
+                                                <span style="margin-right: 4px;">➕</span> Page
+                                            </a>
+
+                                            {{-- Bouton Modifier --}}
+                                            <a href="{{ route('livres.edit', $livre->id) }}" class="text-blue-600 hover:text-blue-900 font-semibold text-sm">Modifier</a>
+
+                                            {{-- Bouton Supprimer --}}
+                                            <form action="{{ route('livres.destroy', $livre->id) }}" method="POST" onsubmit="return confirm('Etes-vous sûr de vouloir supprimer ce livre ?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900 font-semibold">Supprimer</button>
+                                                <button type="submit" class="text-red-600 hover:text-red-900 font-semibold text-sm">Supprimer</button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="p-10 text-center text-gray-500 font-semibold">
-                                        Aucun livre trouvé dans la base de données.
+                                    <td colspan="6" class="p-10 text-center text-gray-500 font-semibold">
+                                        Aucun livre trouvé.
                                     </td>
                                 </tr>
                             @endforelse
