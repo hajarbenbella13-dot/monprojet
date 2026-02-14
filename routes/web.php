@@ -4,14 +4,20 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LivreController; 
 use App\Http\Controllers\Admin\PageController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LecteurController;
+
+
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
+
 
 // Ga3 l-routes li khasshoum l-auth
 Route::middleware('auth')->group(function () {
@@ -47,11 +53,22 @@ Route::middleware('auth')->group(function () {
         Route::get('pages/{page}/edit', [PageController::class, 'create'])->name('pages.edit'); // bhal create + edit
         Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
         Route::get('admin/livres/{livre}/pages', [PageController::class, 'index'])->name('pages.index');
+         // Routes Lecteur
+        
+         Route::get('lecteurs/create', [LecteurController::class, 'create'])->name('lecteurs.create');
 
-    
-    });
-    
+    // Sauvegarder lecteur
+    Route::post('admin/lecteurs', [LecteurController::class, 'store'])->name('lecteurs.store');
+
+    // Afficher lecteur
+    Route::get('lecteurs/{lecteur}', [LecteurController::class, 'show'])->name('lecteurs.show');
+
+    // Page suivante pour lecteur
+    Route::post('lecteurs/{lecteur}/livre/{livre}/page/suivante', [LecteurController::class, 'pageSuivante'])->name('lecteur.page.suivante');
+});  
 });
+    
+
 
 require __DIR__.'/auth.php';
 

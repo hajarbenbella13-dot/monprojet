@@ -14,8 +14,8 @@ class DashboardController extends Controller
             'livresCount' => Livre::count(),
             'pagesCount' => Page::count(),
             'audioPagesCount' => Page::whereNotNull('audio')->count(),
-            'usersCount' => User::count(),
             'latestLivres' => Livre::latest()->take(5)->get(),
         ]);
+       
     }
 }
