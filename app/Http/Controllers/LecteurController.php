@@ -38,17 +38,52 @@ class LecteurController extends Controller
             }
         }
 
-        return redirect()->route('lecteurs.show', $lecteur->id);
+        return redirect()->route('admin.lecteurs.show', $lecteur->id);
     }
+
+    
 
     public function show(Lecteur $lecteur)
     {
-        // Afficher tous les livres avec la dernière page lu
-        $progressions = $lecteur->progressions()->with('livre', 'page')->get();
+        // جميع الكتب حسب العمر
+        $livres = Livre::where('age_min', '<=', $lecteur->age)
+                       ->where('age_max', '>=', $lecteur->age)
+                       ->get();
+    
+        // progressions ديالو
+        $progressions = $lecteur->progressions()
+                                ->get()
+                                ->keyBy('livre_id'); 
+        // مهم: باش نقدروا نقلبوا بسهولة واش عندو progression
+    
+        return view('admin.lecteurs.show', compact('lecteur', 'livres', 'progressions'));
+    }
+    
+    public function continuer($lecteur_id, $livre_id)
+{
+    $progression = Progression::where('lecteur_id', $lecteur_id)
+                               ->where('livre_id', $livre_id)
+                               ->first();
 
-        return view('lecteurs.show', compact('lecteur', 'progressions'));
+    if ($progression) {
+        $page = $progression->derniere_page;
+    } else {
+        $page = 1;
     }
 
+    return redirect()->route('livres.show', [
+        'livre' => $livre_id,
+        'page' => $page
+    ]);
+}
+public function readBook(Lecteur $lecteur, Livre $livre)
+{
+    $pages = Page::where('livre_id', $livre->id)
+                 ->orderBy('num_page')
+                 ->get();
+
+    return view('admin.lecteurs.read', compact('lecteur', 'livre', 'pages'));
+}
     public function pageSuivante(Lecteur $lecteur, Livre $livre)
     {
         $progression = Progression::where('lecteur_id', $lecteur->id)

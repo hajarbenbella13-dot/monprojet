@@ -65,6 +65,13 @@ Route::middleware('auth')->group(function () {
 
     // Page suivante pour lecteur
     Route::post('lecteurs/{lecteur}/livre/{livre}/page/suivante', [LecteurController::class, 'pageSuivante'])->name('lecteur.page.suivante');
+    Route::get('/lecture/{lecteur}/{livre}', [LectureController::class, 'continuer'])
+    ->name('lecture.continuer');
+    Route::get('lecteurs/{lecteur}/livres/{livre}', 
+    [LecteurController::class, 'readBook']
+)->name('lecteurs.readBook');
+
+
 });  
 });
     
