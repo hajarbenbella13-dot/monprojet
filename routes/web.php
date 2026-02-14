@@ -63,14 +63,24 @@ Route::middleware('auth')->group(function () {
     // Afficher lecteur
     Route::get('lecteurs/{lecteur}', [LecteurController::class, 'show'])->name('lecteurs.show');
 
-    // Page suivante pour lecteur
-    Route::post('lecteurs/{lecteur}/livre/{livre}/page/suivante', [LecteurController::class, 'pageSuivante'])->name('lecteur.page.suivante');
-    Route::get('/lecture/{lecteur}/{livre}', [LectureController::class, 'continuer'])
-    ->name('lecture.continuer');
-    Route::get('lecteurs/{lecteur}/livres/{livre}', 
-    [LecteurController::class, 'readBook']
-)->name('lecteurs.readBook');
+    
 
+// Afficher la page d'un livre pour un lecteur
+ 
+    // الروابط الخاصة بالقارئ (خارج الـ Admin باش يخدمو نيشان)
+Route::middleware('auth')->group(function () {
+    
+    // 1. عرض البروفايل (Mes Livres)
+    Route::get('/lecteurs/{lecteur}', [LecteurController::class, 'show'])->name('lecteurs.show');
+
+    // 2. رابط الـ Continuer (صلحت السمية هنا)
+    Route::get('/lecteurs/{lecteur}/livre/{livre}/continuer', [LecteurController::class, 'continuer'])
+        ->name('lecteur.continuer');
+
+    // 3. رابط القراءة (Read)
+    Route::get('/lecteurs/{lecteur}/livre/{livre}/read/{page?}', [LecteurController::class, 'read'])
+        ->name('lecteurs.read');
+});
 
 });  
 });

@@ -41,64 +41,83 @@ class LecteurController extends Controller
         return redirect()->route('admin.lecteurs.show', $lecteur->id);
     }
 
-    
-
     public function show(Lecteur $lecteur)
-    {
-        // جميع الكتب حسب العمر
-        $livres = Livre::where('age_min', '<=', $lecteur->age)
-                       ->where('age_max', '>=', $lecteur->age)
-                       ->get();
-    
-        // progressions ديالو
-        $progressions = $lecteur->progressions()
-                                ->get()
-                                ->keyBy('livre_id'); 
-        // مهم: باش نقدروا نقلبوا بسهولة واش عندو progression
-    
-        return view('admin.lecteurs.show', compact('lecteur', 'livres', 'progressions'));
-    }
-    
-    public function continuer($lecteur_id, $livre_id)
 {
-    $progression = Progression::where('lecteur_id', $lecteur_id)
-                               ->where('livre_id', $livre_id)
-                               ->first();
+    // Toutes les progressions de ce lecteur
+    $progressionsRaw = $lecteur->progressions()->with('livre')->get();
 
-    if ($progression) {
-        $page = $progression->derniere_page;
-    } else {
-        $page = 1;
-    }
+    // Transformer en array associatif par livre_id
+    $progressions = $progressionsRaw->keyBy('livre_id');
 
-    return redirect()->route('livres.show', [
-        'livre' => $livre_id,
-        'page' => $page
-    ]);
+    // Tous les livres adaptés à l'age du lecteur
+    $livres = Livre::where('age_min', '<=', $lecteur->age)
+                   ->where('age_max', '>=', $lecteur->age)
+                   ->get();
+
+    return view('admin.lecteurs.show', compact('lecteur', 'livres', 'progressions'));
 }
-public function readBook(Lecteur $lecteur, Livre $livre)
+
+public function continuer($lecteurId, $livreId)
 {
+    // جلب القارئ والكتاب
+    $lecteur = \App\Models\Lecteur::findOrFail($lecteurId);
+    
+    // جلب التقدم
+    $progression = \App\Models\Progression::where('lecteur_id', $lecteurId)
+                                          ->where('livre_id', $livreId)
+                                          ->first();
+
+    // إذا كاين تقدم صيفطو للصفحة ديالو، وإلا صيفطو لصفحة 1
+    $page = $progression ? $progression->derniere_page : 1;
+
+    return redirect()->route('lecteurs.read', [$lecteurId, $livreId, $page]);
+}
+
+
+public function read(Lecteur $lecteur, Livre $livre, $page = null)
+{
+    // جميع صفحات الكتاب
     $pages = Page::where('livre_id', $livre->id)
                  ->orderBy('num_page')
                  ->get();
 
-    return view('admin.lecteurs.read', compact('lecteur', 'livre', 'pages'));
-}
-    public function pageSuivante(Lecteur $lecteur, Livre $livre)
-    {
-        $progression = Progression::where('lecteur_id', $lecteur->id)
-                        ->where('livre_id', $livre->id)->first();
-
-        $currentPage = Page::find($progression->derniere_page);
-
-        $nextPage = Page::where('livre_id', $livre->id)
-                        ->where('num_page', '>', $currentPage->num_page)
-                        ->orderBy('num_page')->first();
-
-        if ($nextPage) {
-            $progression->update(['derniere_page' => $nextPage->id]);
-        }
-
-        return redirect()->route('lecteurs.show', $lecteur->id);
+    if ($pages->isEmpty()) {
+        return back();
     }
+
+    // إذا ما تصيفطاتش page → نشوف واش عندو progression
+    if (!$page) {
+        $progression = Progression::where('lecteur_id', $lecteur->id)
+                                  ->where('livre_id', $livre->id)
+                                  ->first();
+
+        $page = $progression ? $progression->derniere_page : 1;
+    }
+
+    $currentPage = $pages->firstWhere('num_page', $page);
+
+    if (!$currentPage) {
+        $currentPage = $pages->first();
+        $page = $currentPage->num_page;
+    }
+
+    // تحديث progression
+    Progression::updateOrCreate(
+        [
+            'lecteur_id' => $lecteur->id,
+            'livre_id' => $livre->id,
+        ],
+        [
+            'derniere_page' => $page
+        ]
+    );
+
+    return view('admin.lecteurs.read', compact(
+        'lecteur',
+        'livre',
+        'currentPage',
+        'page',
+        'pages'
+    ));
+}
 }
