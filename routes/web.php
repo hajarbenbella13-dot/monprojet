@@ -22,19 +22,36 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Admin Section
-    Route::prefix('admin')->group(function () {
-        // Livres (Resource katsawab index, create, store, edit, update, destroy)
+    Route::prefix('admin')->middleware('auth')->group(function () {
+
+        // Livres
         Route::resource('livres', LivreController::class);
-
-        // Pages l-livre
+    
+        // Pages
         Route::get('livres/{livre}/pages/create', [PageController::class, 'create'])->name('pages.create');
-        Route::get('admin/livres/{id}/pages', [PageController::class, 'index']);
-        Route::post('admin/livres/{livre}/pages', [PageController::class, 'store'])->name('pages.store');
+    
+        // Inline edit → route update
+        Route::get('admin/livres/{livre}/pages/create', [PageController::class, 'create'])->name('pages.create');
+    
+        // Store new page
+        Route::post('livres/{livre}/pages', [PageController::class, 'store'])->name('pages.store');
+    
+        // Show page
+        Route::get('pages/{page}', [PageController::class, 'show'])->name('pages.show');
+    
+        // Edit page page (si tu veux séparé)
+        Route::get('pages/{page}/edit', [PageController::class, 'edit'])->name('pages.edit');
+    
+        // Delete page
+        Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
+        Route::get('pages/{page}/edit', [PageController::class, 'create'])->name('pages.edit'); // bhal create + edit
+        Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
+        Route::get('admin/livres/{livre}/pages', [PageController::class, 'index'])->name('pages.index');
 
-        Route::get('admin/livres/{livre}/edit', [LivreController::class, 'edit'])->name('livres.edit');
-        Route::put('admin/livres/{livre}', [LivreController::class, 'update'])->name('livres.update');
-        Route::delete('admin/livres/{livre}', [LivreController::class, 'destroy'])->name('livres.destroy');
+    
     });
+    
 });
 
 require __DIR__.'/auth.php';
+

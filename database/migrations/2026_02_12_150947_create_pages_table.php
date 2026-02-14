@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('contenu')->nullable(); 
             $table->string('image')->nullable(); 
             $table->timestamps();
+            $table->unique(['livre_id', 'num_page']);
         });
     }
 
