@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Livre;
 use App\Models\Page;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule; // 👈 Darori t-zid had l-line bach kheddam Rule
+use Illuminate\Validation\Rule; 
 
 class PageController extends Controller
 {
@@ -24,7 +24,7 @@ class PageController extends Controller
             'num_page' => [
                 'required',
                 'integer',
-                // 🛡️ Hna fin kayna l-7imaya:
+                
                 Rule::unique('pages')->where(function ($query) use ($livre) {
                     return $query->where('livre_id', $livre->id);
                 }),
@@ -60,7 +60,6 @@ class PageController extends Controller
     // 1. Suppression
 public function destroy(Page $page)
 {
-    // Mseh l-fichiers mn storage bach mat-3mmrch l-disk khwa
     if ($page->image) \Storage::disk('public')->delete($page->image);
     if ($page->audio) \Storage::disk('public')->delete($page->audio);
     
@@ -73,7 +72,14 @@ public function destroy(Page $page)
 // Show single page
 public function show(Page $page)
 {
+    $livre = $page->livre; 
+    return view('admin.pages.show', compact('page', 'livre'));
     return view('admin.pages.show', compact('page'));
+}
+public function index(Livre $livre)
+{
+    $pages = $livre->pages()->orderBy('num_page')->get();
+    return view('admin.pages.index', compact('livre', 'pages'));
 }
 
 

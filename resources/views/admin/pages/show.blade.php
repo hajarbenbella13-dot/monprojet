@@ -5,7 +5,16 @@
                 Page {{ $page->num_page }} du Livre : 
                 <span class="text-blue-600">{{ $page->livre->titre }}</span>
             </h2>
-            <a href="{{ route('pages.create', $page->livre->id) }}" class="text-gray-600 font-bold">← Retour</a>
+            <div class="flex gap-2">
+                <a href="{{ route('pages.index', $livre->id) }}"
+                          class="flex items-center bg-white border border-gray-300 hover:border-gray-500 text-gray-600 px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm">
+                📖 Voir les Pages</a>
+                <a href="{{ route('pages.create', $page->livre->id) }}"  
+                class="px-5 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 font-medium">
+                ➕ Ajouter Pages
+             </a>
+            </div>
+             
         </div>
     </x-slot>
 
@@ -23,7 +32,7 @@
             @if($page->audio)
                 <audio controls class="w-full mb-6">
                     <source src="{{ asset('storage/' . $page->audio) }}" type="audio/mpeg">
-                    Your browser does not support the audio element.
+                        Votre navigateur ne supporte pas la lecture audio.
                 </audio>
             @endif
 

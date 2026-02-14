@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Ajouter des Pages au Livre : <span class="text-blue-600">{{ $livre->titre }}</span>
             </h2>
-            <a href="{{ route('livres.index') }}" style="color: #4b5563; font-weight: bold;">← Retour</a>
+            <a href="{{ route('livres.index') }}" style="color: #4b5563; font-weight: bold;">← Retour aux livres</a>
         </div>
     </x-slot>
 

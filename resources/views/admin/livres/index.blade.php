@@ -41,7 +41,7 @@
                         <tbody class="divide-y divide-gray-100">
                             @forelse($livres as $index => $livre)
                                 <tr class="h-16 hover:bg-gray-50/50 transition-colors">
-                                    <!-- ID متسلسل -->
+                                    
                                     <td>
                                         <div class="flex justify-center items-center text-xs text-gray-400 font-mono">#{{ $index + 1 }}</div>
                                     </td>
@@ -76,7 +76,7 @@
                                     <!-- Action Pages -->
                                     <td>
                                         <div class="flex justify-center items-center gap-2">
-                                            <a href="{{ route('livres.show', $livre->id) }}" class="p-1 text-blue-500 hover:bg-blue-50 rounded">👁</a>
+                                            <a href="{{ route('pages.index', $livre->id) }}" class="p-1 text-blue-500 hover:bg-blue-50 rounded">👁</a>
                                             <a href="{{ route('pages.create', $livre->id) }}" class="p-1 text-emerald-500 hover:bg-emerald-50 rounded">➕</a>
                                         </div>
                                     </td>

@@ -19,4 +19,5 @@ public function livre()
 {
     return $this->belongsTo(Livre::class);
 }
+
 }
