@@ -77,7 +77,7 @@
                 <div class="flex-1">
                     @if($nextPage)
                         <a href="{{ route('lecteurs.read', [$lecteur->id, $livre->id, $nextPage->num_page]) }}"
-                           class="flex justify-center items-center w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-indigo-700 transition active:scale-95 shadow-lg shadow-indigo-100 uppercase tracking-wider">
+                            class="flex justify-center items-center w-full bg-white border-2 border-gray-100 text-gray-700 py-4 rounded-2xl font-black text-sm hover:border-blue-400 hover:text-blue-600 transition active:scale-95 shadow-sm uppercase tracking-wider">
                             Suivant ➡️
                         </a>
                     @else
