@@ -13,6 +13,7 @@
             </h3>
 
             <div class="grid gap-6">
+                
                 @foreach($livres as $livre)
                     @php
                         // جلب التقدم لهذا الكتاب
@@ -56,10 +57,16 @@
                                         Relire 🔄
                                     </a>
                                 @else
-                                <a href="{{ route('lecteur.continuer', ['lecteur' => $lecteur->id, 'livre' => $livre->id]) }}" 
-                                    class="inline-flex justify-center items-center px-8 py-3 bg-green-600 text-gray-800 rounded-xl text-sm font-black hover:bg-green-700 transition shadow-lg shadow-green-200">
-                                     {{ $progression ? 'CONTINUER ▶️' : 'COMMENCER 📖' }}
-                                 </a>
+                                @if($livre->pages->count() > 0)
+    <a href="{{ route('lecteur.continuer', ['lecteur' => $lecteur->id, 'livre' => $livre->id]) }}" 
+       class="bg-gray-200 text-black px-8 py-3 rounded-xl font-black">
+        {{ $progression ? 'CONTINUER ▶️' : 'COMMENCER 📖' }}
+    </a>
+@else
+    <span class="text-gray-400 italic text-sm">
+        (Bientôt disponible ⏳)
+    </span>
+@endif
                                 @endif
                                 
                             </div>
