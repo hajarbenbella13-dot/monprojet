@@ -16,12 +16,11 @@ class DashboardController extends Controller
             'total_livres'   => \App\Models\Livre::count(),
             'total_pages'    => \App\Models\Page::count(),
             // كنجيبو آخر 5 قراء
-            'recent_lecteurs' => \App\Models\Lecteur::latest()->take(5)->get(),
+            'recent_lecteurs' => \App\Models\Lecteur::latest()->get(),
             // كنشوفو واش كاين شي كتب خاوية
             'livres_vides' => \App\Models\Livre::doesntHave('pages')->count(),
         ];
     
-        // 2. جلب الكتب الأكثر قراءة
         $popular_livres = \App\Models\Livre::withCount('progressions')
                             ->orderBy('progressions_count', 'desc')
                             ->take(3)

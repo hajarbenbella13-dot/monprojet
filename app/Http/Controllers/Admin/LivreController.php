@@ -25,7 +25,7 @@ class LivreController extends Controller
         $request->validate([
             'titre'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'age_range'   => 'required|in:2-5,5-10', // Choix forcé
+            'age_range'   => 'required|in:2-5,6-10', // Choix forcé
             'photo'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'audio'       => 'nullable|mimes:mp3,wav|max:5000',
         ]);
@@ -49,6 +49,7 @@ class LivreController extends Controller
         return redirect()->route('livres.index')->with('success', 'Livre ajouté avec succès!');
     }
 
+
     public function edit(Livre $livre) 
     {
         return view('admin.livres.edit', compact('livre'));
@@ -59,7 +60,7 @@ class LivreController extends Controller
         $request->validate([
             'titre'       => 'required|string|max:255',
             'description' => 'nullable|string',
-            'age_range'   => 'required|in:2-5,5-10',
+            'age_range'   => 'required|in:2-5,6-10',
             'photo'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'audio'       => 'nullable|mimes:mp3,wav|max:5000',
         ]);

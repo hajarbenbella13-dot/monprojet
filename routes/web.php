@@ -3,82 +3,61 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LivreController; 
 use App\Http\Controllers\Admin\PageController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LecteurController;
-
-
 use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
+
+// ============================================================
+// 1. ROUTES PUBLIQUES (Makhdaminch b Login - Ay wahed idkhoul)
+// ============================================================
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Hadu huma li bghiti ykunu cliquable w public:
+Route::get('/admin/lecteurs/create', [LecteurController::class, 'create'])->name('lecteurs.create');
+Route::post('/admin/lecteurs', [LecteurController::class, 'store'])->name('lecteurs.store');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth'])
-    ->name('dashboard');
-  
+// Routes dial l-qraya (Public bach drari sghar idkhlou nichan)
+Route::get('/lecteurs/{lecteur}', [LecteurController::class, 'show'])->name('lecteurs.show');
+Route::get('/lecteurs/{lecteur}/livre/{livre}/continuer', [LecteurController::class, 'continuer'])->name('lecteur.continuer');
+Route::get('/lecteurs/{lecteur}/livre/{livre}/read/{page?}', [LecteurController::class, 'read'])->name('lecteurs.read');
 
-// Ga3 l-routes li khasshoum l-auth
+
+// ============================================================
+// 2. ROUTES PROTEGEES (Darori Email w Password dial l-Admin)
+// ============================================================
+
 Route::middleware('auth')->group(function () {
     
-    // Profile
+    // Dashboard Admin
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile Admin
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Admin Section
-    Route::prefix('admin')->middleware('auth')->group(function () {
+    // Section Admin (prefix 'admin')
+    Route::prefix('admin')->group(function () {
 
-        // Livres
+        // CRUD Livres (Hna fin katchof modifier age makhdamash?)
         Route::resource('livres', LivreController::class);
     
-        // Pages
+        // Pages Management
+        Route::get('livres/{livre}/pages', [PageController::class, 'index'])->name('pages.index');
         Route::get('livres/{livre}/pages/create', [PageController::class, 'create'])->name('pages.create');
-    
-        // Inline edit → route update
-        Route::get('admin/livres/{livre}/pages/create', [PageController::class, 'create'])->name('pages.create');
-    
-        // Store new page
         Route::post('livres/{livre}/pages', [PageController::class, 'store'])->name('pages.store');
-    
-        // Show page
-        Route::get('pages/{page}', [PageController::class, 'show'])->name('pages.show');
-    
-        // Edit page page (si tu veux séparé)
-        Route::get('pages/{page}/edit', [PageController::class, 'edit'])->name('pages.edit');
-    
-        // Delete page
-        Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
-        Route::get('pages/{page}/edit', [PageController::class, 'create'])->name('pages.edit'); // bhal create + edit
-        Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
-        Route::get('admin/livres/{livre}/pages', [PageController::class, 'index'])->name('pages.index');
-         // Routes Lecteur
         
-         Route::get('lecteurs/create', [LecteurController::class, 'create'])->name('lecteurs.create');
+        Route::get('pages/{page}', [PageController::class, 'show'])->name('pages.show');
+        Route::get('pages/{page}/edit', [PageController::class, 'edit'])->name('pages.edit');
+        Route::put('pages/{page}', [PageController::class, 'update'])->name('pages.update');
+        Route::delete('pages/{page}', [PageController::class, 'destroy'])->name('pages.destroy');
 
-    // Sauvegarder lecteur
-    Route::post('admin/lecteurs', [LecteurController::class, 'store'])->name('lecteurs.store');
-
-    // Afficher lecteur
-    Route::get('lecteurs/{lecteur}', [LecteurController::class, 'show'])->name('lecteurs.show');
-
-    
-
-// Afficher la page d'un livre pour un lecteur
- 
-Route::middleware('auth')->group(function () {
-    Route::get('/go/lecteur/{lecteur}/livre/{livre}', [App\Http\Controllers\LecteurController::class, 'continuer'])
-        ->name('lecteur.continuer');
-
-    
-Route::get('/lecteurs', [LecteurController::class, 'index'])->name('lecteurs.index');
+        // Admin list readers
+        Route::get('/lecteurs-list', [LecteurController::class, 'index'])->name('lecteurs.index');
+    });
 });
-Route::get('/lecteurs/{lecteur}/read/{livre}/{page?}', [LecteurController::class, 'read'])->name('lecteurs.read');
-});  
-});
-    
-
 
 require __DIR__.'/auth.php';
-

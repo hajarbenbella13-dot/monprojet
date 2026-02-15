@@ -16,26 +16,34 @@ class LecteurController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:150',
-            'age' => 'required|integer|min:1',
+{
+    // 1. Validation
+    $request->validate([
+        'nom' => 'required|string|max:100',
+        'age_range' => 'required|in:2-5,6-10'
+    ]);
+
+    // 2. Mapping: n-7wlou l-range l raqm
+    $ageValue = ($request->age_range == '2-5') ? 5 : 10;
+
+    // 3. Enregistrement f l-base de données
+    $lecteur = Lecteur::create([
+        'nom' => $request->nom,
+        'age' => $ageValue // Daba ghadi t-stocka s7i7
+    ]);
+
+    // 4. Setup dial l-progressions (optionnel)
+    $livres = Livre::all();
+    foreach ($livres as $livre) {
+        Progression::create([
+            'lecteur_id' => $lecteur->id,
+            'livre_id' => $livre->id,
+            'derniere_page' => 1
         ]);
-
-        $lecteur = Lecteur::create($request->only('nom', 'age'));
-
-        // ديما نبداو بـ الصفحة رقم 1 
-        $livres = Livre::all();
-        foreach ($livres as $livre) {
-            Progression::create([
-                'lecteur_id' => $lecteur->id,
-                'livre_id' => $livre->id,
-                'derniere_page' => 1 // هنا كنحطو رقم الصفحة ماشي الـ ID
-            ]);
-        }
-
-        return redirect()->route('lecteurs.show', $lecteur->id);
     }
+
+    return redirect()->route('lecteurs.show', $lecteur->id);
+}
 
     public function show(Lecteur $lecteur)
 {
@@ -46,8 +54,11 @@ class LecteurController extends Controller
                    ->where('age_max', '>=', $lecteur->age)
                    ->get();
 
-    return view('admin.lecteurs.show', compact('lecteur', 'livres', 'progressions'));
-}
+                   return view('admin.lecteurs.show', [
+                    'lecteur' => $lecteur, 
+                    'livres' => $livres,
+                    'progressions' => $progressions
+                ]);}
     public function continuer($lecteurId, $livreId)
 {
     // جلب التقدم
