@@ -16,10 +16,9 @@
                 
                 @foreach($livres as $livre)
                     @php
-                        // جلب التقدم لهذا الكتاب
+                        
                         $progression = $progressions[$livre->id] ?? null;
                         
-                        // حساب واش كمل الكتاب (آخر صفحة قراها == عدد صفحات الكتاب)
                         $isFinished = false;
                         if ($progression && $livre->pages->count() > 0) {
                             $maxPageNum = $livre->pages->max('num_page');

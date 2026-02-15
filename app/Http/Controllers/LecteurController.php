@@ -38,17 +38,16 @@ class LecteurController extends Controller
     }
 
     public function show(Lecteur $lecteur)
-    {
-        $progressionsRaw = $lecteur->progressions()->with('livre')->get();
-        $progressions = $progressionsRaw->keyBy('livre_id');
+{
+    $progressionsRaw = $lecteur->progressions()->with('livre')->get();
+    $progressions = $progressionsRaw->keyBy('livre_id');
 
-        $livres = Livre::where('age_min', '<=', $lecteur->age)
-                       ->where('age_max', '>=', $lecteur->age)
-                       ->get();
+    $livres = Livre::where('age_min', '<=', $lecteur->age)
+                   ->where('age_max', '>=', $lecteur->age)
+                   ->get();
 
-        return view('admin.lecteurs.show', compact('lecteur', 'livres', 'progressions'));
-    }
-
+    return view('admin.lecteurs.show', compact('lecteur', 'livres', 'progressions'));
+}
     public function continuer($lecteurId, $livreId)
 {
     // جلب التقدم
@@ -66,17 +65,38 @@ class LecteurController extends Controller
         'page' => $page
     ]);
 }
-public function read(Lecteur $lecteur, Livre $livre, $page = null)
+public function read(Lecteur $lecteur, Livre $livre, $page = 1)
 {
-    $pages = Page::where('livre_id', $livre->id)
-                 ->orderBy('num_page')
-                 ->get();
+    // 1. Qlleb 3la l-page b raqmha
+    $currentPage = Page::where('livre_id', $livre->id)
+                       ->where('num_page', $page)
+                       ->first();
 
-    // 💡 هنا كاين المشكل: يلا الكتاب خاوي كيرجعك للور
-    if ($pages->isEmpty()) {
-        return back()->with('error', '⚠️ Ce livre ne contient aucune page pour le moment.');
+    // 2. Ila l-page makaynach
+    if (!$currentPage) {
+        if ($page == 1) {
+            return redirect()->route('lecteurs.show', $lecteur->id)
+                             ->with('error', 'Had l-livre khawi.');
+        }
+        return redirect()->route('lecteurs.read', [$lecteur->id, $livre->id, 1]);
     }
 
-    // ... باقي الكود كيبقى كيفما هو
-}
-}
+    // 3. Update l-progression
+    Progression::updateOrCreate(
+        ['lecteur_id' => $lecteur->id, 'livre_id' => $livre->id],
+        ['derniere_page' => $page]
+    );
+
+    // 4. Les pages Suivante/Précédente
+    $nextPage = Page::where('livre_id', $livre->id)->where('num_page', $page + 1)->first();
+    $prevPage = Page::where('livre_id', $livre->id)->where('num_page', $page - 1)->first();
+
+    // ⚠️ Hna khass l-path ikoun s7i7 3la hsab fin 7atiti l-fichier
+    return view('admin.lecteurs.read', [
+        'lecteur'     => $lecteur,
+        'livre'       => $livre,
+        'currentPage' => $currentPage, // Hadi hiya lli kant naqsa
+        'nextPage'    => $nextPage,
+        'prevPage'    => $prevPage
+    ]);
+}}

@@ -17,7 +17,7 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
-
+  
 
 // Ga3 l-routes li khasshoum l-auth
 Route::middleware('auth')->group(function () {
@@ -71,10 +71,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/go/lecteur/{lecteur}/livre/{livre}', [App\Http\Controllers\LecteurController::class, 'continuer'])
         ->name('lecteur.continuer');
 
-    Route::get('/reading/{lecteur}/{livre}/{page?}', [App\Http\Controllers\LecteurController::class, 'read'])
-        ->name('lecteurs.read');
+    
+Route::get('/lecteurs', [LecteurController::class, 'index'])->name('lecteurs.index');
 });
-
+Route::get('/lecteurs/{lecteur}/read/{livre}/{page?}', [LecteurController::class, 'read'])->name('lecteurs.read');
 });  
 });
     

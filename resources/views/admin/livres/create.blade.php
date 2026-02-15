@@ -34,7 +34,7 @@
                             <select name="age_range" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="" disabled selected>-- Choisissez une tranche d'âge --</option>
                                 <option value="2-5" {{ old('age_range') == '2-5' ? 'selected' : '' }}>👶 De 2 à 5 ans</option>
-                                <option value="5-10" {{ old('age_range') == '5-10' ? 'selected' : '' }}>👦 De 5 à 10 ans</option>
+                                <option value="6-10" {{ old('age_range') == '6-10' ? 'selected' : '' }}>👦 De 6 à 10 ans</option>
                             </select>
                             @error('age_range') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>

@@ -35,8 +35,8 @@
                                 <option value="2-5" {{ (old('age_range', $livre->age_min.'-'.$livre->age_max) == '2-5') ? 'selected' : '' }}>
                                     👶 De 2 à 5 ans
                                 </option>
-                                <option value="5-10" {{ (old('age_range', $livre->age_min.'-'.$livre->age_max) == '5-10') ? 'selected' : '' }}>
-                                    👦 De 5 à 10 ans
+                                <option value="6-10" {{ (old('age_range', $livre->age_min.'-'.$livre->age_max) == '6-10') ? 'selected' : '' }}>
+                                    👦 De 6 à 10 ans
                                 </option>
                             </select>
                         </div>
