@@ -44,6 +44,21 @@ class LecteurController extends Controller
 
     return redirect()->route('lecteurs.show', $lecteur->id);
 }
+public function selectLecteur($id)
+{
+    $lecteur = Lecteur::findOrFail($id);
+    
+    session(['active_lecteur_id' => $lecteur->id]);
+    session(['active_lecteur_nom' => $lecteur->nom]);
+
+    return redirect()->route('lecteurs.show', $id);
+}
+
+public function index()
+{
+    $lecteurs = Lecteur::all();
+    return view('lecteurs.index', compact('lecteurs')); 
+}
 
     public function show(Lecteur $lecteur)
 {
@@ -110,4 +125,5 @@ public function read(Lecteur $lecteur, Livre $livre, $page = 1)
         'nextPage'    => $nextPage,
         'prevPage'    => $prevPage
     ]);
+    
 }}

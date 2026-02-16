@@ -1,8 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-xl text-gray-800">
-            👤 Profil de : {{ $lecteur->nom }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-bold text-xl text-gray-800 leading-tight">
+                👤 Profil de : {{ $lecteur->nom }}
+            </h2>
+    
+            <a href="{{ route('lecteur.exit') }}" 
+   class="flex items-center gap-2 bg-red-50 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition shadow-sm border border-red-100">
+    <span>Quitter le profil</span>
+    <span class="text-base">👋</span>
+</a>
+        </div>
     </x-slot>
 
     <div class="py-10 max-w-4xl mx-auto px-4">

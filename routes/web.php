@@ -8,18 +8,24 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // ============================================================
-// 1. ROUTES PUBLIQUES (Makhdaminch b Login - Ay wahed idkhoul)
+// 1. ROUTES PUBLIQUES (Ay wahed idkhoul - Bla Login)
 // ============================================================
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Hadu huma li bghiti ykunu cliquable w public:
+// Hadu huma li khasshom i-kouno kharij l-middleware auth
 Route::get('/admin/lecteurs/create', [LecteurController::class, 'create'])->name('lecteurs.create');
 Route::post('/admin/lecteurs', [LecteurController::class, 'store'])->name('lecteurs.store');
 
-// Routes dial l-qraya (Public bach drari sghar idkhlou nichan)
+// Route d l-EXIT khass t-koun PUBLIC bach t-khdem bla login
+Route::get('/exit-lecteur', function () {
+    session()->forget(['active_lecteur_id', 'active_lecteur_nom']);
+    return redirect()->route('lecteurs.create'); 
+})->name('lecteur.exit');
+
+// Routes dial l-qraya (Public)
 Route::get('/lecteurs/{lecteur}', [LecteurController::class, 'show'])->name('lecteurs.show');
 Route::get('/lecteurs/{lecteur}/livre/{livre}/continuer', [LecteurController::class, 'continuer'])->name('lecteur.continuer');
 Route::get('/lecteurs/{lecteur}/livre/{livre}/read/{page?}', [LecteurController::class, 'read'])->name('lecteurs.read');
@@ -42,7 +48,7 @@ Route::middleware('auth')->group(function () {
     // Section Admin (prefix 'admin')
     Route::prefix('admin')->group(function () {
 
-        // CRUD Livres (Hna fin katchof modifier age makhdamash?)
+        // CRUD Livres
         Route::resource('livres', LivreController::class);
     
         // Pages Management
