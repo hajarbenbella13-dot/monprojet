@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lecteur extends Model
 {  
-    protected $fillable = ['nom', 'age'];
+    protected $fillable = ['nom','pin', 'age'];
     
     public function progressions() {
         return $this->hasMany(Progression::class);

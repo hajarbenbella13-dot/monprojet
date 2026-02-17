@@ -35,7 +35,51 @@
                             }
                         }
                     @endphp
-
+                 <div class="grid gap-6">
+                    @foreach($livres as $livre)
+                        @php
+                            $progression = $progressions[$livre->id] ?? null;
+                            $isFinished = false;
+                            if ($progression && $livre->pages->count() > 0) {
+                                $maxPageNum = $livre->pages->max('num_page');
+                                if ($progression->derniere_page >= $maxPageNum) {
+                                    $isFinished = true;
+                                }
+                            }
+                        @endphp
+                
+                        <div class="p-4 border-2 {{ $isFinished ? 'border-green-100 bg-green-50/30' : 'border-gray-50 bg-white' }} rounded-[1.5rem] transition-all hover:shadow-lg">
+                            
+                            <div class="flex items-start gap-5"> <div class="w-16 h-32 flex-shrink-0 relative">
+                                    @if($livre->photo) 
+                                        <img src="{{ asset('storage/' . $livre->photo) }}"
+                                             alt="{{ $livre->titre }}" 
+                                             class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-100">
+                                    @else
+                                        <div class="w-full h-full bg-indigo-50 rounded-xl flex items-center justify-center border border-dashed border-indigo-200">
+                                            <span class="text-3xl">📖</span>
+                                        </div>
+                                    @endif
+                                </div>
+                
+                                <div class="flex-1 flex flex-col min-h-[8rem]">
+                                    <div>
+                                        <h4 class="text-lg font-black text-gray-800 mb-1 uppercase tracking-tight">
+                                            {{ $livre->titre }}
+                                        </h4>
+                                        
+                                        <p class="text-gray-500 text-xs md:text-sm leading-snug line-clamp-2 mb-3">
+                                            {{ $livre->description ?? "Une aventure magique t'attend..." }}
+                                        </p>
+                                    </div>
+                
+                                    
+                                </div>
+                
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
                     <div class="p-6 border-2 {{ $isFinished ? 'border-green-100 bg-green-50/30' : 'border-gray-50 bg-white' }} rounded-2xl transition-all hover:shadow-md">
                         <div class="flex justify-between items-start">
                             <div>
@@ -55,7 +99,7 @@
                                 @else
                                     <p class="text-xs font-bold text-amber-500 uppercase tracking-widest mt-2">Nouveau livre ✨</p>
                                 @endif
-                            </div>
+            </div>
 
                             <div class="text-right">
                                 @if($isFinished)

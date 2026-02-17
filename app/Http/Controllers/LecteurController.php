@@ -17,31 +17,33 @@ class LecteurController extends Controller
 
     public function store(Request $request)
 {
-    // 1. Validation
+    // 1. Validation d l-anwa3
     $request->validate([
         'nom' => 'required|string|max:100',
-        'age_range' => 'required|in:2-5,6-10'
+        'pin' => 'required|digits:4',
+        'age_range' => 'required'
     ]);
 
-    // 2. Mapping: n-7wlou l-range l raqm
-    $ageValue = ($request->age_range == '2-5') ? 5 : 10;
+    // 2. 🔥 L-MAGIE: Check wach had s-miya m3a had l-PIN déjà khdam bihom chi wa7ed
+    $dejaPris = Lecteur::where('nom', $request->nom)
+                       ->where('pin', $request->pin)
+                       ->exists();
 
-    // 3. Enregistrement f l-base de données
-    $lecteur = Lecteur::create([
-        'nom' => $request->nom,
-        'age' => $ageValue // Daba ghadi t-stocka s7i7
-    ]);
-
-    // 4. Setup dial l-progressions (optionnel)
-    $livres = Livre::all();
-    foreach ($livres as $livre) {
-        Progression::create([
-            'lecteur_id' => $lecteur->id,
-            'livre_id' => $livre->id,
-            'derniere_page' => 1
-        ]);
+    if ($dejaPris) {
+        return back()->with('error', "Ce prénom est déjà utilisé avec ce code PIN. S'il te plaît, choisis un autre code PIN pour te différencier ! ✨");
     }
 
+    // 3. Ila kan PIN jdid, kammal l-khidma dyalk
+    $ageValue = ($request->age_range == '2-5') ? 5 : 10;
+
+    $lecteur = Lecteur::create([
+        'nom' => $request->nom,
+        'pin' => $request->pin,
+        'age' => $ageValue 
+    ]);
+
+    // ... setup progressions ...
+    
     return redirect()->route('lecteurs.show', $lecteur->id);
 }
 public function selectLecteur($id)
@@ -60,6 +62,22 @@ public function index()
     return view('lecteurs.index', compact('lecteurs')); 
 }
 
+public function checkPin(Request $request)
+{
+    // Kan-qalbo 3la l-lecteur li 3ndu had s-miya W had l-PIN b-joj
+    $lecteur = Lecteur::where('nom', $request->nom)
+                     ->where('pin', $request->pin)
+                     ->first();
+
+    if ($lecteur) {
+        // ✅ Lqinah! Dabba Laravel 3arf i-ddih l l-ID dyal Yanis l-mounassib
+        session(['active_lecteur_id' => $lecteur->id]);
+        return redirect()->route('lecteurs.show', $lecteur->id);
+    }
+
+    // ❌ Ila mal9ahch, ma-ghadi n-goulo lih la s-miya ghalta la PIN ghalat (Security)
+    return back()->with('error', 'Oups! Le prénom ou le code PIN est incorrect. ❌');
+}
     public function show(Lecteur $lecteur)
 {
     $progressionsRaw = $lecteur->progressions()->with('livre')->get();
