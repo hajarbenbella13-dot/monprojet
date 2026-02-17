@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'books_screen.dart';
 import 'dart:math';
 import 'dart:ui';
 
@@ -94,8 +95,13 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           const SizedBox(height: 15),
           _buildPinField("Ton PIN secret"),
           const SizedBox(height: 25),
-          _buildMainButton("C'est parti ! 🚀", () {}),
-          const SizedBox(height: 10),
+         _buildMainButton("C'est parti ! 🚀", () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const BooksScreen()),
+  );
+}),
+const SizedBox(height: 10),
           _buildSwitchButton(
             "Tu n'as pas de profil ?", 
             "Créer mon compte ✨", 
