@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'auth_screen.dart';
-
+import 'auth_screen.dart'; 
+import 'adminlogin_screen.dart'; 
 
 class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -15,9 +17,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
+    // Animation dyal n-joum bach i-bqa i-brille (scintillation)
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
   }
 
@@ -33,9 +36,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. الخلفية الليلية المتدرجة
+          // 1. L-khalfya l-liliya (Gradient)
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [Color(0xFF0F172A), Color(0xFF1E1E50), Color(0xFF000000)],
                 begin: Alignment.topCenter,
@@ -44,115 +47,151 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
             ),
           ),
 
-          // 2. طبقة النجوم الصفراء (خلف المحتوى)
-          ...List.generate(40, (index) {
+          // 2. Tbaqa dyal n-joum (Animated Stars)
+          ...List.generate(45, (index) {
             return AnimatedStar(
               controller: _controller,
               top: _random.nextDouble() * MediaQuery.of(context).size.height,
               left: _random.nextDouble() * MediaQuery.of(context).size.width,
-              size: _random.nextDouble() * 10 + 4,
+              size: _random.nextDouble() * 8 + 3,
               delay: _random.nextDouble(),
             );
           }),
 
-          // 3. المحتوى الأساسي (UI Content)
+          // 3. L-mo7tawa l-asassi (UI)
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  // Logo + Title (Top)
+                  // L-foq: Logo o l-bouton dyal Admin
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // محاولة عرض اللوكو الصغير فوق
-                      Image.asset(
-                        'images/logo.jpg', 
-                        height: 40, 
-                        errorBuilder: (c, e, s) => Icon(Icons.star_border, color: Colors.yellowAccent)
+                      Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'images/logo.jpg', 
+                              height: 40, 
+                              errorBuilder: (c, e, s) => const Icon(Icons.star, color: Colors.yellowAccent),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            "PetitLecteur",
+                            style: TextStyle(
+                              fontSize: 22, 
+                              fontWeight: FontWeight.bold, 
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        "PetitLecteur",
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                      // Bouton sghir dyal l-Admin
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AdminLoginScreen()),
+                      );
+                          print("Mode Admin cliqué");
+                        },
+                        icon: const Icon(Icons.admin_panel_settings_rounded, color: Colors.white54, size: 28),
                       ),
                     ],
                   ),
-                  SizedBox(height: 40),
 
-                  Text(
+                  const SizedBox(height: 50),
+
+                  // L-3onwan l-kbir
+                  const Text(
                     'Une petite pause\nmagique avant de dormir',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 34, 
+                      fontSize: 32, 
                       fontWeight: FontWeight.bold, 
                       color: Colors.white,
-                      shadows: [Shadow(color: Colors.blueAccent.withOpacity(0.5), blurRadius: 20)],
+                      height: 1.2,
                     ),
                   ),
-                  SizedBox(height: 30),
-                  
-                  // Quote Box
+
+                  const SizedBox(height: 30),
+
+                  // Quote Box (Glassmorphism effect)
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: Colors.white.withOpacity(0.1)),
                     ),
-                    child: Text(
+                    child: const Text(
                       '"Parce que vos journées sont bien remplies, mais que le rituel de la lecture est sacré. PetitLecteur accompagne vos enfants dans leurs rêves les plus doux."',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 16, 
+                        fontStyle: FontStyle.italic, 
+                        color: Colors.white70,
+                        height: 1.5,
+                      ),
                     ),
                   ),
-                  
-                  Spacer(),
-                  
-                  // زر البدء
+
+                  const Spacer(),
+
+                  // Bouton d-dkhol (CTA)
                   ElevatedButton(
                     onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => AuthScreen(),
-    ),
-  );
-},
-
+                      // 💡 Hna 7eyedna 'const' bach may-kounch error m3a AuthScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AuthScreen()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orangeAccent,
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                      elevation: 10,
+                      shadowColor: Colors.orangeAccent.withOpacity(0.5),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                     ),
-                    child: Text("Commencer l'aventure 🚀", 
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+                    child: const Text(
+                      "Commencer l'aventure 🚀", 
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                    ),
                   ),
-                  
-                  SizedBox(height: 40),
-                  
-                  // اللوكو الدائري الكبير (المحسن)
+
+                  const SizedBox(height: 50),
+
+                  // Logo kbir d-dayer l-ta7t
                   Container(
-                    width: 150,
-                    height: 150,
-                    padding: EdgeInsets.all(4), // إطار خارجي رقيق
+                    width: 140,
+                    height: 140,
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white, // خلفية بيضاء سادة لضمان ظهور اللوكو
+                      color: Colors.white,
                       boxShadow: [
-                        BoxShadow(color: Colors.blue.withOpacity(0.4), blurRadius: 30, spreadRadius: 5)
+                        BoxShadow(
+                          color: Colors.blueAccent.withOpacity(0.3), 
+                          blurRadius: 40, 
+                          spreadRadius: 5
+                        )
                       ],
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        'images/logo.jpg',
+                        'images/logo.jpg', 
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.image_not_supported, color: Colors.grey, size: 50);
-                        },
+                        errorBuilder: (c, e, s) => const Icon(Icons.image, size: 50, color: Colors.grey),
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -163,6 +202,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   }
 }
 
+/// 🌟 Class dyal n-joum lli kat-t-7arrak
 class AnimatedStar extends StatelessWidget {
   final AnimationController controller;
   final double top;
@@ -170,7 +210,14 @@ class AnimatedStar extends StatelessWidget {
   final double size;
   final double delay;
 
-  AnimatedStar({required this.controller, required this.top, required this.left, required this.size, required this.delay});
+  const AnimatedStar({
+    super.key, 
+    required this.controller, 
+    required this.top, 
+    required this.left, 
+    required this.size, 
+    required this.delay,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -180,14 +227,14 @@ class AnimatedStar extends StatelessWidget {
       child: AnimatedBuilder(
         animation: controller,
         builder: (context, child) {
+          // Scintillation logic
           double opacity = (sin((controller.value + delay) * 2 * pi) + 1) / 2;
           return Opacity(
-            opacity: opacity.clamp(0.2, 0.7),
+            opacity: opacity.clamp(0.1, 0.8),
             child: Icon(
               Icons.star,
               size: size,
               color: Colors.yellowAccent,
-              shadows: [Shadow(color: Colors.orange, blurRadius: size)],
             ),
           );
         },
