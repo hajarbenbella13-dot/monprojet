@@ -96,10 +96,10 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           _buildPinField("Ton PIN secret"),
           const SizedBox(height: 25),
          _buildMainButton("C'est parti ! 🚀", () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const BooksScreen()),
-  );
+ Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (context) => const BooksScreen()),
+);
 }),
 const SizedBox(height: 10),
           _buildSwitchButton(

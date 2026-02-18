@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'read_book_screen.dart';
 
 class BooksScreen extends StatelessWidget {
   const BooksScreen({super.key});
@@ -147,7 +148,14 @@ class BooksScreen extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ReadBookScreen(book: book), 
+    ),
+  );
+},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: isFinished ? Colors.greenAccent : Colors.white,
                             foregroundColor: Colors.black,
