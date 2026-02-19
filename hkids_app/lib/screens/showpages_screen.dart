@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// 1. Darouri t-importi l-page dyal modification hna
+import 'modifierpages_screen.dart'; 
 
 class ShowPageScreen extends StatelessWidget {
   final Map page;
@@ -36,7 +38,6 @@ class ShowPageScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
           child: Center(
             child: Container(
-              // ✅ Hna l-maxWidth bach iji b7al max-w-3xl f Tailwind
               constraints: const BoxConstraints(maxWidth: 600),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -53,7 +54,7 @@ class ShowPageScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // --- 1. IMAGE (B7al Blade w-80 h-80) ---
+                  // --- 1. IMAGE ---
                   if (page['image'] != null)
                     Container(
                       margin: const EdgeInsets.only(bottom: 24),
@@ -61,7 +62,7 @@ class ShowPageScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
                           "http://votre-api.com/storage/${page['image']}",
-                          width: 320, // 80 * 4 f tailwind
+                          width: 320,
                           height: 320,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
@@ -108,7 +109,7 @@ class ShowPageScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1F2937), // gray-800
+                      color: Color(0xFF1F2937),
                       height: 1.6,
                     ),
                   ),
@@ -123,11 +124,23 @@ class ShowPageScreen extends StatelessWidget {
                     runSpacing: 12,
                     alignment: WrapAlignment.center,
                     children: [
+                      // ✅ BOUTON MODIFIER ACTIVER
                       _buildActionButton(
                         label: "Modifier",
                         icon: Icons.edit_outlined,
                         color: Colors.amber[500]!,
-                        onTap: () {},
+                        onTap: () {
+                          // Naviguer vers la page de modification
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ModifierPageScreen(
+                                page: page, 
+                                livre: livre
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _buildActionButton(
                         label: "Supprimer",
@@ -180,7 +193,10 @@ class ShowPageScreen extends StatelessWidget {
             child: const Text("Annuler", style: TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              // Logic pour supprimer (API Call)
+              Navigator.pop(context);
+            },
             child: const Text("Supprimer", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ),
         ],

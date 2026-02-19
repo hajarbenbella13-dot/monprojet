@@ -91,62 +91,77 @@ class _LivresListScreenState extends State<LivresListScreen> {
     );
   }
 
-  Widget _buildLivreRow(Map<String, dynamic> livre) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      child: Row(
-        children: [
-          Expanded(flex: 1, child: Center(child: Text("#${livre['id']}"))),
-          Expanded(flex: 2, child: _buildPhotoThumbnail(livre['photo'])),
-          Expanded(flex: 4, child: Text(livre['titre'], style: const TextStyle(fontWeight: FontWeight.w600))),
-          Expanded(flex: 2, child: _buildAgeBadge(livre)),
+ Widget _buildLivreRow(Map<String, dynamic> livre) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+    child: Row(
+      children: [
+        Expanded(flex: 1, child: Center(child: Text("#${livre['id']}"))),
+        Expanded(flex: 2, child: _buildPhotoThumbnail(livre['photo'])),
+        Expanded(flex: 4, child: Text(livre['titre'] ?? "Sans titre", style: const TextStyle(fontWeight: FontWeight.w600))),
+        Expanded(flex: 2, child: _buildAgeBadge(livre)),
 
-          // 📄 ACTIONS PAGES
-          Expanded(
-            flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _IconButton(
-                  icon: Icons.visibility_outlined,
-                  color: Colors.blue,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => IndexPage(livre: livre, pages: livre['pages'] ?? []),
-                  )),
-                ),
-                _IconButton(
-                  icon: Icons.add_circle_outline,
-                  color: Colors.teal,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => AddPageScreen(livre: livre),
-                  )),
-                ),
-              ],
-            ),
+        // 📄 ACTIONS PAGES (Hna fin kheddam l-Index dyal les pages)
+        Expanded(
+          flex: 3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // ✅ BOUTON SHOW (Voir les pages)
+              _IconButton(
+                icon: Icons.visibility_outlined,
+                color: Colors.blue,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IndexPage(
+                        livre: livre, // ✅ Passina l-livre
+                        pages: livre['pages'] ?? [], // ✅ Passina les pages
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // ✅ BOUTON ADD PAGE
+              _IconButton(
+                icon: Icons.add_circle_outline,
+                color: Colors.teal,
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => AddPageScreen(livre: livre),
+                )),
+              ),
+            ],
           ),
+        ),
 
-          // ⚙️ ACTIONS LIVRE
-          Expanded(
-            flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _IconButton(
-                  icon: Icons.edit_outlined,
-                  color: Colors.amber[700]!,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => ModifierLivreScreen(livre: livre),
-                  )),
-                ),
-                _IconButton(icon: Icons.delete_outline, color: Colors.redAccent, onTap: () {}),
-              ],
-            ),
+        // ⚙️ ACTIONS LIVRE (Modifier / Supprimer l-ktab aslan)
+        Expanded(
+          flex: 3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _IconButton(
+                icon: Icons.edit_outlined,
+                color: Colors.amber[700]!,
+                onTap: () => Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => ModifierLivreScreen(livre: livre),
+                )),
+              ),
+              _IconButton(
+                icon: Icons.delete_outline, 
+                color: Colors.redAccent, 
+                onTap: () {
+                  // Hna logic dyal supprimer l-livre
+                }
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
+        ),
+      ],
+    ),
+  );
+}
   Widget _buildAddButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
