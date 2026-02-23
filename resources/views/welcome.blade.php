@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetitLecteur - Bienvenue</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.bunny.net/css?family=bubblegum-sans:400" rel="stylesheet" />
     <style>
         .font-kids { font-family: 'Bubblegum Sans', cursive; }

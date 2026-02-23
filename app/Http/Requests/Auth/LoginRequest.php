@@ -21,27 +21,31 @@ class LoginRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'login' => ['required', 'string'], 
-        'password' => ['required', 'string'],
+            // Hna 'login' ghadi ikoun houwa l-email dyal l-user
+            'login' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
         ];
     }
 
     /**
      * Attempt to authenticate the request's credentials.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('login', 'password'), $this->boolean('remember'))) {
+        // Laravel kiy-qlleb 3la 'email' f l-base de données, 
+        // walakin Flutter kiy-sift lina smit 'login'
+        $credentials = [
+            'email' => $this->login, 
+            'password' => $this->password
+        ];
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -54,8 +58,6 @@ class LoginRequest extends FormRequest
 
     /**
      * Ensure the login request is not rate limited.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {
@@ -80,6 +82,7 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
+        // Kan-diro l-limit 3la hsab l-email + l-IP dyal l-user
         return Str::transliterate(Str::lower($this->string('login')).'|'.$this->ip());
     }
 }

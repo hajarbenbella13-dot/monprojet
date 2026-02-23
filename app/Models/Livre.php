@@ -16,5 +16,6 @@ class Livre extends Model
     public function progressions() {
         return $this->hasMany(Progression::class);
     }
+    
 
 }

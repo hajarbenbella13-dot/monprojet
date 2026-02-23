@@ -6,111 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\Livre;
 use App\Models\Page;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule; 
+use Illuminate\Support\Facades\Storage;
 
 class PageController extends Controller
 {
-    
-    public function create(Livre $livre, Request $request)
-{
-    $editingPage = $request->has('edit') ? Page::findOrFail($request->edit) : null;
-    return view('admin.pages.create', compact('livre', 'editingPage'));
-}
-
-
-    public function store(Request $request, Livre $livre)
+    // API dyal Flutter bach t-jib ga3 l-pages dyal ktab
+    public function getPagesForFlutter(Livre $livre)
     {
-        $request->validate([
-            'num_page' => [
-                'required',
-                'integer',
-                
-                Rule::unique('pages')->where(function ($query) use ($livre) {
-                    return $query->where('livre_id', $livre->id);
-                }),
-            ],
-            'image'   => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'audio'   => 'nullable|mimetypes:audio/mpeg,audio/mp3,audio/wav,audio/x-wav|max:10000',
-            'contenu' => 'required|string',
-        ], [
-            // Message d l'erreur personnalisé
-            'num_page.unique' => 'Had l-paj (' . $request->num_page . ') Ce numéro de page existe déjà pour ce livre.!',
-        ]);
+        try {
+            $pages = $livre->pages()->orderBy('num_page', 'asc')->get()->map(function ($page) {
+                return [
+                    'id'       => $page->id,
+                    'num_page' => $page->num_page,
+                    'contenu'  => $page->contenu,
+                    // asset() kat-zid http://localhost:8000/ storage automatic
+                    'image'    => $page->image ? asset('storage/' . $page->image) : null,
+                    'audio'    => $page->audio ? asset('storage/' . $page->audio) : null,
+                ];
+            });
 
-        $imagePath = $request->file('image')->store('pages/images', 'public');
-        
-        $audioPath = null;
-        if ($request->hasFile('audio')) {
-            $audioPath = $request->file('audio')->store('pages/audios', 'public');
-        }
+            return response()->json([
+                'status' => 'success',
+                'pages'  => $pages
+            ], 200);
 
-        $page = new \App\Models\Page();
-        $page->livre_id = $livre->id;
-        $page->num_page = $request->num_page;
-        $page->image = $imagePath;
-        $page->audio = $audioPath;
-        $page->contenu = $request->contenu;
-        
-        if($page->save()) {
-            return redirect()->back()->with('success', 'Page ajoutée avec succès!');
-        } else {
-            return "Erreur lors de l'enregistrement";
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur: ' . $e->getMessage()
+            ], 500);
         }
     }
-    // 1. Suppression
-public function destroy(Page $page)
-{
-    if ($page->image) \Storage::disk('public')->delete($page->image);
-    if ($page->audio) \Storage::disk('public')->delete($page->audio);
-    
-    $page->delete();
-
-    return redirect()->back()->with('success', 'Page supprimée avec succès !');
-}
-
-
-// Show single page
-public function show(Page $page)
-{
-    $livre = $page->livre; 
-    return view('admin.pages.show', compact('page', 'livre'));
-    return view('admin.pages.show', compact('page'));
-}
-public function index(Livre $livre)
-{
-    $pages = $livre->pages()->orderBy('num_page')->get();
-    return view('admin.pages.index', compact('livre', 'pages'));
-}
-
-
-// update
-public function update(Request $request, Page $page)
-{
-    $request->validate([
-        'image'   => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        'audio'   => 'nullable|mimetypes:audio/mpeg,audio/mp3,audio/wav,audio/x-wav|max:10000',
-        'contenu' => 'required|string',
-    ]);
-
-    // Update contenu
-    $page->contenu = $request->contenu;
-
-    // Update image si upload jdida
-    if ($request->hasFile('image')) {
-        if($page->image) \Storage::disk('public')->delete($page->image);
-        $page->image = $request->file('image')->store('pages/images', 'public');
-    }
-
-    // Update audio si upload jdida
-    if ($request->hasFile('audio')) {
-        if($page->audio) \Storage::disk('public')->delete($page->audio);
-        $page->audio = $request->file('audio')->store('pages/audios', 'public');
-    }
-
-    
-    $page->save();
-    return redirect()->route('pages.create', $page->livre_id)
-    ->with('success', 'Page modifiée avec succès !');
-}
-
 }

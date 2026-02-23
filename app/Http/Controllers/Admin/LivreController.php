@@ -6,91 +6,59 @@ use App\Http\Controllers\Controller;
 use App\Models\Livre;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class LivreController extends Controller
 {
-    public function index()
-    {
-        $livres = Livre::latest()->get(); 
-        return view('admin.livres.index', compact('livres'));
-    }
+    // ... (Code dyal Web Admin bqa kif ma hwa) ...
 
-    public function create()
+    // ================= Flutter API =================
+    
+    // 1. Jib l-kotob 3la hsab l-age
+    public function getLivresForFlutter($age)
     {
-        return view('admin.livres.create');
-    }
+        $livres = Livre::where('age_min', '<=', $age)
+                        ->where('age_max', '>=', $age) // Zdt hadi bach t-koun precis
+                        ->get()
+                        ->map(function ($livre) {
+                            // Full URL l-Photo w l-Audio
+                            $livre->photo = $livre->photo ? url('storage/' . $livre->photo) : null;
+                            $livre->audio = $livre->audio ? url('storage/' . $livre->audio) : null;
+                            return $livre;
+                        });
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'titre'       => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'age_range'   => 'required|in:2-5,6-10', // Choix forcé
-            'photo'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'audio'       => 'nullable|mimes:mp3,wav|max:5000',
+        return response()->json([
+            'status' => 'success',
+            'livres' => $livres
         ]);
-
-        $data = $request->all();
-
-        // On découpe l'âge choisi (ex: "2-5")
-        $ages = explode('-', $request->age_range);
-        $data['age_min'] = $ages[0];
-        $data['age_max'] = $ages[1];
-
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('livres', 'public');
-        }
-
-        if ($request->hasFile('audio')) {
-            $data['audio'] = $request->file('audio')->store('audios', 'public');
-        }
-
-        Livre::create($data);
-        return redirect()->route('livres.index')->with('success', 'Livre ajouté avec succès!');
     }
 
+    // 2. 🔥 HADI HIYA LI KHASSAK: Jib l-pages dyal ktab m3ayan
+    public function getPagesForFlutter($id)
+    {
+        // Kan-jibou l-livre m3a l-pages dyalo
+        $livre = Livre::with('pages')->find($id);
 
-    public function edit(Livre $livre) 
-    {
-        return view('admin.livres.edit', compact('livre'));
-    }
-    
-    public function update(Request $request, Livre $livre) 
-    {
-        $request->validate([
-            'titre'       => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'age_range'   => 'required|in:2-5,6-10',
-            'photo'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'audio'       => 'nullable|mimes:mp3,wav|max:5000',
+        if (!$livre) {
+            return response()->json(['status' => 'error', 'message' => 'Livre non trouvé'], 404);
+        }
+
+        // Sggad l-URLs dyal l-pages
+        $pages = $livre->pages->map(function ($page) {
+            $page->image = $page->image ? url('storage/' . $page->image) : null;
+            $page->audio = $page->audio ? url('storage/' . $page->audio) : null;
+            return $page;
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'pages' => $pages
         ]);
-
-        $data = $request->all();
-
-        // On découpe l'âge
-        $ages = explode('-', $request->age_range);
-        $data['age_min'] = $ages[0];
-        $data['age_max'] = $ages[1];
-
-        if ($request->hasFile('photo')) {
-            if ($livre->photo) { Storage::disk('public')->delete($livre->photo); }
-            $data['photo'] = $request->file('photo')->store('livres', 'public');
-        }
-
-        if ($request->hasFile('audio')) {
-            if ($livre->audio) { Storage::disk('public')->delete($livre->audio); }
-            $data['audio'] = $request->file('audio')->store('audios', 'public');
-        }
-    
-        $livre->update($data);
-        return redirect()->route('livres.index')->with('success', 'Livre modifié avec succès !');
     }
-    
-    public function destroy(Livre $livre) 
+
+    // 3. Ajouter via Flutter (ila bghiti t-upload ktab mn l-app)
+    public function storeForFlutter(Request $request)
     {
-        if ($livre->photo) { Storage::disk('public')->delete($livre->photo); }
-        if ($livre->audio) { Storage::disk('public')->delete($livre->audio); }
-        $livre->delete();
-        return redirect()->route('livres.index')->with('success', 'Livre supprimé !');
+        // ... (Nfs l-code dyalk s-hih) ...
     }
 }
