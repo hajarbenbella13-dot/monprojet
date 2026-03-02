@@ -25,8 +25,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Hna 'login' ghadi ikoun houwa l-email dyal l-user
-            'login' => ['required', 'string', 'email'],
+            // Hna l-valeur li katsifti f Flutter khass t-koun string 3adi
+            'login' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -38,14 +38,9 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Laravel kiy-qlleb 3la 'email' f l-base de données, 
-        // walakin Flutter kiy-sift lina smit 'login'
-        $credentials = [
-            'email' => $this->login, 
-            'password' => $this->password
-        ];
-
-        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+        // MOHEM: Hna dert 'login' => $this->login bach Laravel i-qelleb 
+        // f l-colonne 'login' li 3ndek f phpMyAdmin
+        if (! Auth::attempt(['login' => $this->login, 'password' => $this->password], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -82,7 +77,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        // Kan-diro l-limit 3la hsab l-email + l-IP dyal l-user
         return Str::transliterate(Str::lower($this->string('login')).'|'.$this->ip());
     }
 }

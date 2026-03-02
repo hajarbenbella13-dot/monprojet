@@ -68,22 +68,19 @@ class LecteurController extends Controller
 
     // Get Livres by Age (Flutter)
     public function showForFlutter($age)
-    {
-        // Kan-jibou l-kotob li mwafqin m3a l-age
-        $livres = Livre::where('age_min', '<=', $age)
-                       ->where('age_max', '>=', $age)
-                       ->get()
-                       ->map(function($livre) {
-                           // Darouri asset() bach t-tla3 l-photo f Flutter Web
-                           if ($livre->photo) {
-                               $livre->photo = asset('storage/' . $livre->photo);
-                           }
-                           return $livre;
-                       });
+{
+    $livres = Livre::where('age_min', '<=', $age)
+                   ->where('age_max', '>=', $age)
+                   ->get()
+                   ->map(function($livre) {
+                       if ($livre->photo) {
+                           // 💡 Ila kanti kheddam f localhost, t-aked mn APP_URL f .env
+                           $livre->photo = asset('storage/' . $livre->photo);
+                       }
+                       return $livre;
+                   });
 
-        return response()->json([
-            'status' => 'success',
-            'livres' => $livres
-        ]);
-    }
+    // ✅ Rejje3 ghir $livres bo7dha (List), machi Map fiha 'status'
+    return response()->json($livres);
+}
 }
